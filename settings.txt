@@ -1,0 +1,5 @@
+Master_volume:1.0
+confirm:[Z]
+cancel:[X]
+heal:[C]
+move:[ARROWS]
