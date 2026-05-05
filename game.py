@@ -63,8 +63,17 @@ attack_combination = {
         200,
         100,
         10
-    )
+    ),
     
+    "Bone_phase_1_stack": attack.Attacks.create_group(
+        5,
+        "long_bone",
+        r"Images\Attacks\long_bone.png",
+        5,
+        200,
+        100,
+        10
+    )
     
 }
     
@@ -363,8 +372,39 @@ def game():
                 bones = attack_combination["Bone_phase_1_long"]
                 bone_up = attack_combination["Bone_phase_1_long_up"]
                 
+                
                 if change: # oof
                     underfell_sans.head.set_image(5)
+                  
+                
+                if bone_counter < len(bones):
+                    print("hello 1234")
+                    bones[bone_counter].move(random.randint(5,10))
+                    bones[bone_counter].display(screen)
+            
+                    bone_up[bone_counter].move(random.randint(5,10))
+                    bone_up[bone_counter].display(screen)
+                
+                    if bones[bone_counter].finished:
+                        bone_counter += 1
+               
+                
+                if bone_counter >= len(bones):
+                    if box.w != 600 or box.h != 200:
+                        box.set_mode("on")
+                        box.change_size()      
+                    else:
+                        print("asda")
+                        bone_counter = 0
+                        phase +=1
+                        box.set_mode("off")
+                        
+            
+            
+            elif phase == 2:
+                bones = attack_combination["Bone_phase_1_long"]
+                bone_up = attack_combination["Bone_phase_1_long_up"]
+                
                     
                 
                 if bone_counter < len(bones):
@@ -380,7 +420,6 @@ def game():
                 else:
                     bone_counter = 0
                     phase += 1
-            
                 
             
             
