@@ -25,59 +25,176 @@ def options_picker(lst,index):
     return code
 
 attack_combination = {
+
     "Bone_phase_1": attack.Attacks.create_group(
         5,
         "Bone_1",
         r"Images\Attacks\normal_bone.png",
-        5,     # amount (not really used per instance)
-        200,   # x
-        450,   # y
-        10     # damage
+        200,
+        450,
+        10
     ),
 
     "Bone_phase_1_up": attack.Attacks.create_group(
         5,
         "Bone_1",
         r"Images\Attacks\normal_bone.png",
-        5,
         200,
         300,
         10
     ),
-    
+
     "Bone_phase_1_long": attack.Attacks.create_group(
         5,
         "long_bone",
         r"Images\Attacks\long_bone.png",
-        5,
-        200,
+        250,
         450,
         10
     ),
-    
+
     "Bone_phase_1_long_up": attack.Attacks.create_group(
         5,
         "long_bone",
         r"Images\Attacks\long_bone.png",
-        5,
+        250,
         200,
-        100,
         10
     ),
-    
-    "Bone_phase_1_stack": attack.Attacks.create_group(
+
+    "Bone_phase_1_stack": attack.Attacks.create_group( # change stack to something else
         5,
         "long_bone",
-        r"Images\Attacks\long_bone.png",
-        5,
-        200,
-        100,
+        r"C:\Users\chuch\OneDrive\Desktop\UNDERFELL\Images\Attacks\stack_bone.png",
+        50,
+        350,
         10
+    ),
+
+    "Bone_phase_1_stack2": attack.Attacks.create_group(
+        5,
+        "long_bone",
+        r"C:\Users\chuch\OneDrive\Desktop\UNDERFELL\Images\Attacks\stack_bone.png",
+        50,
+        200,
+        10
+    ),
+
+    "Normal_Gaster_blaster": attack.Gaster.create_group(
+        8,
+        "Normal_Gaster",
+        r"Images\Attacks\Gaster_idle_1.png",
+        50,
+        350,
+        250,
+        90
+    ),
+    
+    "Normal_Gaster_blaster_opp": attack.Gaster.create_group(
+        8,
+        "Normal_Gaster_opp",
+        r"Images\Attacks\Gaster_idle_1.png",
+        500,
+        400,
+        500,
+        90
+    ),
+    
+    
+       "Bone_phase_1_blue": attack.Bones.create_group(
+        6,
+        "blue_bone",
+        r"Images\Attacks\normal_blue_bone.png",
+        200,
+        450,
+        1
+    ),
+       
+       "Bone_phase_1_blue_long": attack.Bones.create_group(
+        6,
+        "blue_bone_long",
+        r"Images\Attacks\blue_bone.png",
+        250,
+        200,
+        1
+    ),
+       
+       
+      
+       "Bone_phase_1_orange": attack.Bones.create_group(
+        5,
+        "orange_bone",
+        r"Images\Attacks\long_bone.png",
+        250,
+        450,
+        1
+    ),
+       
+       
+        "Bone_phase_1_orange_long": attack.Bones.create_group(
+        5,
+        "orange_bone_long",
+        r"Images\Attacks\orange_bone.png",
+        250,
+        200,
+        1
     )
-    
 }
+
+
     
     
+    
+    
+dialogue = {
+    # IDLE / CONSTANT PRESSURE
+    "Idle_1": "stop moving like you’re thinking it’ll save you.",
+    "Idle_2": "you hesitate again and you’re dead.",
+    "Idle_3": "i don’t care what you’re planning. it won’t work.",
+    "Idle_4": "you’re making this too easy.",
+    "Idle_5": "keep looking for an opening. you won’t find one.",
+    "Idle_6": "i’ve buried worse than you for less.",
+
+    # MID FIGHT
+    "Talk_1": "you’re slowing down. bad habit.",
+    "Talk_2": "that panic’s starting to show.",
+    "Talk_3": "you wanted this fight. now survive it.",
+    "Talk_4": "don’t blink. that’s when it gets ugly.",
+    "Talk_5": "you’re running out of mistakes.",
+
+    # ATTACK PRESSURE
+    "Attack_1": "dodge.",
+    "Attack_2": "too slow.",
+    "Attack_3": "you’re already done.",
+    "Attack_4": "move or die.",
+    "Attack_5": "you saw that coming. you just didn’t react.",
+
+    # HIT / REACTION
+    "Hit_1": "tch—",
+    "Hit_2": "that it?",
+    "Hit_3": "you call that damage?",
+    "Hit_4": "careful. you’re not untouchable.",
+
+    # LOW HP SANS (more dangerous, less joking)
+    "LowHP_1": "alright... now you’re just wasting my time.",
+    "LowHP_2": "i’m done holding back.",
+    "LowHP_3": "you wanted serious? here it is.",
+    "LowHP_4": "don’t expect another opening.",
+
+    # WIN / END
+    "Win_1": "pathetic.",
+    "Win_2": "that’s what you risked everything for?",
+    "Win_3": "stay down."
+}
+
+
+battle_text = utils.tokenise(dialogue)
+
+speech_lock = False
+
+battle_speech = None
+    
+#### this dialogue is specficslly for battle. (DO NOT GET THIS MIXED WITH SANS INTRO SPECIFIC DIALOGUE) - EBUKA
     
     
     
@@ -96,8 +213,10 @@ attack_combination = {
     
 def game():
     # indexes for attacks
+    global battle_speech
 
     bone_counter = 0 
+    gaster_counter = 0
     pygame.init()
     pygame.mixer.init()
     
@@ -110,7 +229,7 @@ def game():
     
     
     
-    
+    gaster_blaster = pygame.mixer.Sound(r"sounds\gaster_blaster_sound_effect_1.mp3")
     
     
     Clock = pygame.time.Clock()
@@ -125,7 +244,7 @@ def game():
     keys = utils.read_data("settings.txt",0,5)
     #print(keys)
     
-    game_mode = "Phase_1" # change back to intro later
+    game_mode = "intro" # change back to intro later
     
     path = "c:\\USERS\\CHUCH\\APPDATA\\LOCAL\\MICROSOFT\\WINDOWS\\FONTS\\DTM-MONO.OTF" # undertale font - small
     font = pygame.font.Font(path,15)
@@ -378,17 +497,24 @@ def game():
                   
                 
                 if bone_counter < len(bones):
-                    print("hello 1234")
-                    bones[bone_counter].move(random.randint(5,10))
+            
+                    bones[bone_counter].move(random.randint(8,10))
                     bones[bone_counter].display(screen)
             
-                    bone_up[bone_counter].move(random.randint(5,10))
+                    bone_up[bone_counter].move(random.randint(8,10))
                     bone_up[bone_counter].display(screen)
                 
                     if bones[bone_counter].finished:
                         bone_counter += 1
+                else:
+                    bone_counter = 0
+                    phase += 1
+                    player.set_gravity()
+                    underfell_sans.head.set_image(14)
+                   
+                    
                
-                
+                """
                 if bone_counter >= len(bones):
                     if box.w != 600 or box.h != 200:
                         box.set_mode("on")
@@ -398,21 +524,21 @@ def game():
                         bone_counter = 0
                         phase +=1
                         box.set_mode("off")
-                        
+                """    
             
             
             elif phase == 2:
                 bones = attack_combination["Bone_phase_1_long"]
-                bone_up = attack_combination["Bone_phase_1_long_up"]
+                bone_up = attack_combination["Bone_phase_1_long_up"] # long
                 
                     
                 
                 if bone_counter < len(bones):
-                    print("hello 1234")
-                    bones[bone_counter].move(random.randint(5,10))
+                  
+                    bones[bone_counter].move(random.randint(10,20))
                     bones[bone_counter].display(screen)
             
-                    bone_up[bone_counter].move(random.randint(5,10))
+                    bone_up[bone_counter].move(random.randint(10,20))
                     bone_up[bone_counter].display(screen)
                 
                     if bones[bone_counter].finished:
@@ -420,7 +546,181 @@ def game():
                 else:
                     bone_counter = 0
                     phase += 1
+                    
+                    
+                    
+            elif phase == 3:
+                gaster = attack_combination["Normal_Gaster_blaster"]
+                gaster_opp = attack_combination["Normal_Gaster_blaster_opp"]
                 
+               
+                
+                print(gaster_counter)
+                
+                if gaster_counter < len(gaster):
+                    
+                    gaster[gaster_counter].move_gaster(screen)
+                    gaster[gaster_counter].gaster_change(screen,gaster_blaster) # gaster_blaster variable is the sfx
+
+                    gaster_opp[gaster_counter].move_gaster(screen)
+                    gaster_opp[gaster_counter].gaster_change(screen,gaster_blaster) # gaster_blaster variable is the sfx
+
+            
+                 
+            
+                    if gaster[gaster_counter].finished:
+                        gaster_counter += 1
+                       
+                      
+                        attack_combination["Normal_Gaster_blaster"]  = attack.Gaster.create_group(
+                        10,
+                        "Normal_Gaster",
+                        r"Images\Attacks\Gaster_idle_1.png",
+                         50,
+                         random.randint(150,450),
+                         200,
+                         90
+                        )
+
+                        attack_combination["Normal_Gaster_blaster_opp"]  = attack.Gaster.create_group(
+                        10,
+                        "Normal_Gaster",
+                        r"Images\Attacks\Gaster_idle_1.png",
+                         50,
+                         random.randint(200,400),
+                         200,
+                         90
+                        )
+                        
+                else: 
+                    gaster_counter = 0
+                    phase += 1
+                    underfell_sans.head.set_image(4)
+                    sans_eye.play()
+                    player.set_gravity()
+                    
+                    
+                   
+                    
+            elif phase == 4:
+                bones = attack_combination["Bone_phase_1_blue"]
+                bone_up = attack_combination["Bone_phase_1_blue_long"]
+                
+                
+        
+                if bone_counter < len(bones):
+            
+                    bones[bone_counter].move(random.randint(8,10))
+                    bones[bone_counter].display(screen)
+            
+                    bone_up[bone_counter].move(random.randint(8,10))
+                    bone_up[bone_counter].display(screen)
+                    
+                    
+                   
+                    bone_up[bone_counter].blue_effect(player)
+                    bones[bone_counter].blue_effect(player)
+                    
+                
+                    if bones[bone_counter].finished:
+                        bone_counter += 1
+                else:
+                    bone_counter = 0
+                    phase += 1
+                    underfell_sans.head.set_image(10)
+                    battle_speech = gaming_objects.DialogueManager(battle_text[0])
+                    
+                    
+                
+                          
+            elif phase == 5:
+                bones = attack_combination["Bone_phase_1_orange"]
+                bone_up = attack_combination["Bone_phase_1_orange_long"]
+                
+                
+        
+                if bone_counter < len(bones):
+            
+                    bones[bone_counter].move(random.randint(8,10))
+                    bones[bone_counter].display(screen)
+            
+                    bone_up[bone_counter].move(random.randint(8,10))
+                    bone_up[bone_counter].display(screen)
+                    
+                    
+                   
+                    bone_up[bone_counter].orange_effect(player)
+                    bones[bone_counter].orange_effect(player)
+                    
+                
+                    if bones[bone_counter].finished:
+                        bone_counter += 1
+                        
+                        
+                else:
+                    bone_counter = 0
+                    underfell_sans.head.set_image(3)
+                    phase += 1
+                   
+                    
+                    
+                    
+                    
+                    
+                    
+            elif phase == 6:
+                gaster = attack_combination["Normal_Gaster_blaster"]
+                gaster_opp = attack_combination["Normal_Gaster_blaster_opp"]
+                
+                
+                bones = attack_combination["Bone_phase_1_blue"]
+                bone_up = attack_combination["Bone_phase_1_blue_long"]
+                
+               
+                
+                if gaster_counter < len(gaster):
+
+                    gaster[gaster_counter].move_gaster(screen)
+                    gaster[gaster_counter].gaster_change(screen, gaster_blaster)
+                    
+                    bones[bone_counter].move(random.randint(8,10))
+                    bones[bone_counter].display(screen)
+            
+                    bone_up[bone_counter].move(random.randint(8,10))
+                    bone_up[bone_counter].display(screen)
+
+                    if gaster[gaster_counter].finished:
+                        gaster_counter += 1
+
+                         # respawn gaster blasters
+                        attack_combination["Normal_Gaster_blaster"] = attack.Gaster.create_group(
+                         10,
+                        "Normal_Gaster",
+                         r"Images\Attacks\Gaster_idle_1.png",
+                        50,
+                        random.randint(150, 450),
+                        200,
+                         90
+                         )
+
+                    # respawn blue bones safely
+                        attack_combination["Bone_phase_1_blue_long"] = attack.Bones.create_group(
+                        10,
+                        "blue_bone_long",
+                        r"Images\Attacks\blue_bone.png",
+                        250,
+                        200,
+                        1
+                        )
+                        
+                        attack_combination["Bone_phase_1_blue"] = attack.Bones.create_group(
+                        10,
+                        "blue_bone",
+                        r"Images/Attacks/normal_blue_bone.png",
+                        250,
+                        500,
+                        1
+                        )
             
             
             

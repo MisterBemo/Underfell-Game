@@ -456,7 +456,7 @@ class player:
         self.y = y
         
         self.speed = 4# default speed 
-        
+        self.moving = False
         
         
         self.img = pygame.image.load(r"C:\Users\chuch\OneDrive\Desktop\UNDERFELL\Images\red_soul.png")
@@ -477,6 +477,10 @@ class player:
         self.ground_y = 510
         self.vel_y = 0
         
+        self.rect = self.img.get_rect(topleft=(self.x,self.y))
+        
+        
+      
         
         
         self.width  = self.img.get_width()
@@ -484,8 +488,10 @@ class player:
 
     def update(self,box): # just check keys
         keys =  pygame.key.get_pressed()
-
+       # print(self.moving)
         if keys[pygame.K_UP]: # if gravity on this gonna need to be locked
+            self.moving = True
+            
             if self.gravity_on:
                 if self.on_ground:
                     self.vel_y = self.jump_strenghth
@@ -493,15 +499,20 @@ class player:
                     
             else:
                 self.y -= self.speed
+        else:
+            self.moving = False
                 
                 
             
         if keys[pygame.K_DOWN]:
+            self.moving = True
             self.y+=self.speed
         if keys[pygame.K_RIGHT]:
+            self.moving = True
             self.x += self.speed
         
         if keys[pygame.K_LEFT]:
+            self.moving = True
             self.x -= self.speed
             
             
@@ -521,7 +532,8 @@ class player:
         if (self.y + self.height)+10 > box.box.bottom: # 
             self.y = (box.box.bottom - self.height) - 10
         
-        
+        self.rect.x = self.x
+        self.rect.y = self.y
             
         
         
@@ -565,3 +577,4 @@ class player:
 
 if __name__ == "__main__":
     print("debug")
+    print(player(2,3,4).rect)
