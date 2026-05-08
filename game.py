@@ -81,7 +81,7 @@ attack_combination = {
     ),
 
     "Normal_Gaster_blaster": attack.Gaster.create_group(
-        8,
+        5,
         "Normal_Gaster",
         r"Images\Attacks\Gaster_idle_1.png",
         50,
@@ -91,7 +91,7 @@ attack_combination = {
     ),
     
     "Normal_Gaster_blaster_opp": attack.Gaster.create_group(
-        8,
+        5,
         "Normal_Gaster_opp",
         r"Images\Attacks\Gaster_idle_1.png",
         500,
@@ -146,7 +146,7 @@ attack_combination = {
     
     
     
-dialogue = {
+battle_speech = {
     # IDLE / CONSTANT PRESSURE
     "Idle_1": "stop moving like you’re thinking it’ll save you.",
     "Idle_2": "you hesitate again and you’re dead.",
@@ -188,11 +188,12 @@ dialogue = {
 }
 
 
-battle_text = utils.tokenise(dialogue)
 
-speech_lock = False
 
-battle_speech = None
+
+
+
+
     
 #### this dialogue is specficslly for battle. (DO NOT GET THIS MIXED WITH SANS INTRO SPECIFIC DIALOGUE) - EBUKA
     
@@ -217,6 +218,10 @@ def game():
 
     bone_counter = 0 
     gaster_counter = 0
+    speech_lock = False
+    
+    battle_text_counter = 0
+    
     pygame.init()
     pygame.mixer.init()
     
@@ -244,7 +249,7 @@ def game():
     keys = utils.read_data("settings.txt",0,5)
     #print(keys)
     
-    game_mode = "intro" # change back to intro later
+    game_mode = "Phase_1" # change back to intro later
     
     path = "c:\\USERS\\CHUCH\\APPDATA\\LOCAL\\MICROSOFT\\WINDOWS\\FONTS\\DTM-MONO.OTF" # undertale font - small
     font = pygame.font.Font(path,15)
@@ -338,6 +343,18 @@ def game():
     underfell_sans.head.x + 180,  
     underfell_sans.head.y + 20    
     )
+    
+    
+    battle_text = utils.tokenise(battle_speech,
+                             underfell_sans.head.x + 180,
+                             underfell_sans.head.y + 20
+                             
+                             
+                             )
+   
+    battle_talk = gaming_objects.DialogueManager(battle_text[battle_text_counter])
+    
+    
     
     text = gaming_objects.DialogueManager(tokens[count])
     
@@ -471,7 +488,7 @@ def game():
             
                     if bones[bone_counter].finished:
                         bone_counter += 1
-                    print(bone_counter)
+                   # print(bone_counter)
                 else:
                     bone_counter = 0 # reset and increments
                     phase += 1
@@ -628,7 +645,7 @@ def game():
                     bone_counter = 0
                     phase += 1
                     underfell_sans.head.set_image(10)
-                    battle_speech = gaming_objects.DialogueManager(battle_text[0])
+                    
                     
                     
                 
@@ -658,71 +675,102 @@ def game():
                         
                         
                 else:
+                    underfell_sans.head.set_image(3)
                     bone_counter = 0
+                    phase += 1
+                    
+                    attack_combination["Bone_phase_1_orange"]=attack.Bones.create_group(
+                    5,
+                    "orange_bone",
+                     r"Images\Attacks\long_bone.png",
+                    250,
+                     450,
+                     1
+                     )
+       
+       
+                    attack_combination["Bone_phase_1_orange_long"] = attack.Bones.create_group(
+                    5,
+                    "orange_bone_long",
+                    r"Images\Attacks\orange_bone.png",
+                    250,
+                    200,
+                    1
+                     )
+                    
+                    
+                    
+                    
+                   
+            
+            elif phase == 6:
+                bones = attack_combination["Bone_phase_1_orange"]
+                bone_up = attack_combination["Bone_phase_1_orange_long"]
+                
+                gaster = attack_combination["Normal_Gaster_blaster"]
+                
+                
+                
+                if bone_counter < len(bones):
+                    gaster[gaster_counter].move_gaster(screen)
+                    gaster[gaster_counter].gaster_change(screen,gaster_blaster) 
+                 
+                        
+                  
+                    bone_up[bone_counter].orange_effect(player)
+                    bones[bone_counter].orange_effect(player)
+                
+
+                    bones[bone_counter].display(screen)
+                    bones[bone_counter].move(10) 
+                    
+                    bone_up[bone_counter].display(screen)
+                    bone_up[bone_counter].move(10) 
+                    
+                    if gaster[gaster_counter].finished:
+                        gaster_counter += 1
+                        attack_combination["Normal_Gaster_blaster"]  = attack.Gaster.create_group(
+                        5,
+                        "Normal_Gaster",
+                        r"Images\Attacks\Gaster_idle_1.png",
+                         50,
+                         random.randint(150,450),
+                         200,
+                         90
+                        )
+                        
+                    if bones[bone_counter].finished:
+                        bone_counter += 1
+                
+                 
+                   
+                        
+                        
+                        
+                else:
+                    print("switch")
+                    print(bone_counter)
                     underfell_sans.head.set_image(3)
                     phase += 1
+                    gaster_counter = 0      
                    
                     
                     
-                    
-                    
-                    
-                    
-            elif phase == 6:
-                gaster = attack_combination["Normal_Gaster_blaster"]
-                gaster_opp = attack_combination["Normal_Gaster_blaster_opp"]
-                
-                
-                bones = attack_combination["Bone_phase_1_blue"]
-                bone_up = attack_combination["Bone_phase_1_blue_long"]
-                
-               
-                
-                if gaster_counter < len(gaster):
-
-                    gaster[gaster_counter].move_gaster(screen)
-                    gaster[gaster_counter].gaster_change(screen, gaster_blaster)
-                    
-                    bones[bone_counter].move(random.randint(8,10))
-                    bones[bone_counter].display(screen)
             
-                    bone_up[bone_counter].move(random.randint(8,10))
-                    bone_up[bone_counter].display(screen)
-
-                    if gaster[gaster_counter].finished:
-                        gaster_counter += 1
-
-                         # respawn gaster blasters
-                        attack_combination["Normal_Gaster_blaster"] = attack.Gaster.create_group(
-                         10,
-                        "Normal_Gaster",
-                         r"Images\Attacks\Gaster_idle_1.png",
-                        50,
-                        random.randint(150, 450),
-                        200,
-                         90
-                         )
-
-                    # respawn blue bones safely
-                        attack_combination["Bone_phase_1_blue_long"] = attack.Bones.create_group(
-                        10,
-                        "blue_bone_long",
-                        r"Images\Attacks\blue_bone.png",
-                        250,
-                        200,
-                        1
-                        )
                         
-                        attack_combination["Bone_phase_1_blue"] = attack.Bones.create_group(
-                        10,
-                        "blue_bone",
-                        r"Images/Attacks/normal_blue_bone.png",
-                        250,
-                        500,
-                        1
-                        )
-            
-            
+            elif phase == 7:
+                underfell_sans.display_dialogue_box(screen)
+                battle_talk.draw(screen,font)
+                finished =  battle_talk.update(0.01,sans_voice)
+                
+                if battle_text_counter < 4:
+                    if finished:
+                        battle_text_counter += 1
+                        battle_talk =  gaming_objects.DialogueManager(battle_text[battle_text_counter])
+                else:
+                    phase+=1
+                    player.set_gravity()
+               
             
             
             

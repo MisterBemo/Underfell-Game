@@ -455,7 +455,7 @@ class player:
         self. x = x
         self.y = y
         
-        self.speed = 4# default speed 
+        self.speed = 6# default speed 
         self.moving = False
         
         
