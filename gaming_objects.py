@@ -367,7 +367,14 @@ class Battle_buttons(Box):
             char.head.set_image(12)
         elif char.Mercy_text.index < 65:
             char.head.set_image(4)
-            
+        else:
+            pass
+            # here we gonna make the bones come up
+    
+    def Mercy_animation(self): # once mercy text has done the sans character will bring up bones and then player will die and then go to home screen
+        pass
+    
+    
         
       
       
@@ -457,6 +464,11 @@ class player:
         
         self.speed = 6# default speed 
         self.moving = False
+        
+        self.forcefield = False
+        self.forcefield_counter = 0
+        
+        
         
         
         self.img = pygame.image.load(r"C:\Users\chuch\OneDrive\Desktop\UNDERFELL\Images\red_soul.png")

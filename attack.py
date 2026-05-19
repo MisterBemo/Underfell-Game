@@ -38,8 +38,10 @@ class Attacks:
         if self.x >= 800:
             self.finished = True
 
-    def collision(self, char):
-        if self.rect.colliderect(char.rect):
+    def collision(self, char,sfx):
+        if self.rect.colliderect(char.rect) and not char.forcefield:
+            char.forcefield = True
+            sfx.play()
             return True
         else:
             return False
@@ -50,14 +52,18 @@ class Bones(Attacks):
         super().__init__(name, img, x, y, damage) # do at lunch
         
 
-    def orange_effect(self,char):
-        if not  char.moving and self.collision(char):
+    def orange_effect(self,char,sfx):
+        if not  char.moving and not char.forcefield and  self.collision(char,sfx):
+            char.forcefield = True
             self.damage(char)
             
+            
 
-    def blue_effect(self,char):
-        if char.moving and self.collision(char):
+    def blue_effect(self,char,sfx):
+        if char.moving and not char.forcefield and  self.collision(char,sfx):
+            char.forcefield = True
             self.damage(char)
+            
 
 
 class Gaster(Attacks):
@@ -67,13 +73,15 @@ class Gaster(Attacks):
         self.angle = angle
         self.timer = 0
         self.finished = False
+        self.damage_amount = 4
         
         self.vel_x = 0
-        self.vel_inc = 4
+        self.vel_inc = 2
         
         
         self.length = 0
         self.thickness = 80
+        
         
 
         self.img1 = pygame.image.load(r"Images\Attacks\Gaster_idle_1.png")
@@ -93,28 +101,54 @@ class Gaster(Attacks):
         
         self.color = (255,255,255)
         
+        
+
+        self.start_x = self.x + 120 # start of line
+        self.start_y = self.y + 120
+
+        self.end_x = self.start_x + self.length + 40
+        self.end_y = self.start_y 
+        
+        self.blast_beam = pygame.Rect(self.start_x,self.start_y,self.end_x,self.end_y) # beam
+        
       
     
     def lock_on_target(self, player):
         pass
     
     
-    def draw_beam(self, screen):
+    def gaster_collide(self,char):
+        if self.blast_beam.colliderect(char.rect) and not char.forcefield:
+            char.forcefield = True
+            return True
+        else:
+            return False
+    
+    def draw_beam(self, screen,char):
         
 
-        self.length += self.vel_x + 10
+        self.length += self.vel_x + 20
 
-        start_x = self.x + 120 # start of line
-        start_y = self.y + 120
+        start_x = self.x + 160 # start of line
+        start_y = self.y + 80
 
-        end_x = start_x + self.length + 40
-        end_y = start_y 
+        end_x = start_x + self.length + 150
+        
         
 
-        pygame.draw.line(screen, (255,0,0),
-                     (start_x, start_y),
-                     (end_x, end_y),
-                     self.thickness)
+        self.blast_beam = pygame.Rect(start_x,start_y,end_x,80)
+        
+        pygame.draw.rect(screen,"red",self.blast_beam)
+        
+        if self.gaster_collide(char):
+            self.damage(char)
+            
+            print("TOUCHING")
+        
+    
+            
+        
+        
         
         
         
@@ -151,9 +185,9 @@ class Gaster(Attacks):
             self.finished = True
         
         
-    def move_gaster(self,screen,sfx=None): # need to change gaster blaster angle for beam
+    def move_gaster(self,screen,char,sfx=None): # need to change gaster blaster angle for beam
         if self.state == "fire":
-            self.draw_beam(screen)
+            self.draw_beam(screen,char)
             self.x -= self.vel_x
             self.vel_x +=  self.vel_inc
     

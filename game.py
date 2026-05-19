@@ -1,4 +1,3 @@
-from ctypes import util
 import random
 
 import utils
@@ -81,10 +80,10 @@ attack_combination = {
     ),
 
     "Normal_Gaster_blaster": attack.Gaster.create_group(
-        5,
+        5, 
         "Normal_Gaster",
         r"Images\Attacks\Gaster_idle_1.png",
-        50,
+        100,
         350,
         250,
         90
@@ -152,7 +151,7 @@ battle_speech = {
     "Idle_2": "you hesitate again and you’re dead.",
     "Idle_3": "i don’t care what you’re planning. it won’t work.",
     "Idle_4": "you’re making this too easy.",
-    "Idle_5": "keep looking for an opening. you won’t find one.",
+    "Idle_5": "Get read for my special attack !!!!!!!",
     "Idle_6": "i’ve buried worse than you for less.",
 
     # MID FIGHT
@@ -324,11 +323,16 @@ def game():
     box = gaming_objects.Box("Box")
     health_bar = gaming_objects.HPBar(400,570,25,25,20)
     
-    phase = 0
+    phase = 0# counter for phases
+    
     state = ""
     choice_made = False
     opcode = 0
+    curr_game_mode = "Phase_1"
     sans_eye = pygame.mixer.Sound("sounds\\sans_sfx\\sans-eye-sounds.mp3")
+    
+    
+    take_damage = pygame.mixer.Sound("sounds\\damage_taken.mp3")
     
    
     
@@ -485,6 +489,11 @@ def game():
             
                     bone_up[bone_counter].move(random.randint(5,10))
                     bone_up[bone_counter].display(screen)
+                    
+                    
+                    if bone_up[bone_counter].collision(player,take_damage) or bones[bone_counter].collision(player,take_damage):
+                        player.hp -= 1
+                        
             
                     if bones[bone_counter].finished:
                         bone_counter += 1
@@ -520,6 +529,9 @@ def game():
             
                     bone_up[bone_counter].move(random.randint(8,10))
                     bone_up[bone_counter].display(screen)
+                    
+                    if bone_up[bone_counter].collision(player,take_damage) or bones[bone_counter].collision(player,take_damage):
+                        player.hp -= 1
                 
                     if bones[bone_counter].finished:
                         bone_counter += 1
@@ -557,6 +569,9 @@ def game():
             
                     bone_up[bone_counter].move(random.randint(10,20))
                     bone_up[bone_counter].display(screen)
+                    
+                    if bone_up[bone_counter].collision(player,take_damage) or bones[bone_counter].collision(player,take_damage):
+                        player.hp -= 1
                 
                     if bones[bone_counter].finished:
                         bone_counter += 1
@@ -576,10 +591,10 @@ def game():
                 
                 if gaster_counter < len(gaster):
                     
-                    gaster[gaster_counter].move_gaster(screen)
+                    gaster[gaster_counter].move_gaster(screen,player)
                     gaster[gaster_counter].gaster_change(screen,gaster_blaster) # gaster_blaster variable is the sfx
 
-                    gaster_opp[gaster_counter].move_gaster(screen)
+                    gaster_opp[gaster_counter].move_gaster(screen,player)
                     gaster_opp[gaster_counter].gaster_change(screen,gaster_blaster) # gaster_blaster variable is the sfx
 
             
@@ -590,17 +605,17 @@ def game():
                        
                       
                         attack_combination["Normal_Gaster_blaster"]  = attack.Gaster.create_group(
-                        10,
+                        3,
                         "Normal_Gaster",
                         r"Images\Attacks\Gaster_idle_1.png",
                          50,
-                         random.randint(150,450),
+                         random.randint(150,250),
                          200,
                          90
                         )
 
                         attack_combination["Normal_Gaster_blaster_opp"]  = attack.Gaster.create_group(
-                        10,
+                        3,
                         "Normal_Gaster",
                         r"Images\Attacks\Gaster_idle_1.png",
                          50,
@@ -635,8 +650,8 @@ def game():
                     
                     
                    
-                    bone_up[bone_counter].blue_effect(player)
-                    bones[bone_counter].blue_effect(player)
+                    bone_up[bone_counter].blue_effect(player,take_damage)
+                    bones[bone_counter].blue_effect(player,take_damage)
                     
                 
                     if bones[bone_counter].finished:
@@ -666,8 +681,8 @@ def game():
                     
                     
                    
-                    bone_up[bone_counter].orange_effect(player)
-                    bones[bone_counter].orange_effect(player)
+                    bone_up[bone_counter].orange_effect(player,take_damage)
+                    bones[bone_counter].orange_effect(player,take_damage)
                     
                 
                     if bones[bone_counter].finished:
@@ -712,13 +727,13 @@ def game():
                 
                 
                 if bone_counter < len(bones):
-                    gaster[gaster_counter].move_gaster(screen)
+                    gaster[gaster_counter].move_gaster(screen,player)
                     gaster[gaster_counter].gaster_change(screen,gaster_blaster) 
                  
                         
                   
-                    bone_up[bone_counter].orange_effect(player)
-                    bones[bone_counter].orange_effect(player)
+                    bone_up[bone_counter].orange_effect(player,take_damage)
+                    bones[bone_counter].orange_effect(player,take_damage)
                 
 
                     bones[bone_counter].display(screen)
@@ -763,16 +778,79 @@ def game():
                 battle_talk.draw(screen,font)
                 finished =  battle_talk.update(0.01,sans_voice)
                 
-                if battle_text_counter < 4:
+                if battle_text_counter < 3:
                     if finished:
                         battle_text_counter += 1
                         battle_talk =  gaming_objects.DialogueManager(battle_text[battle_text_counter])
                 else:
                     phase+=1
                     player.set_gravity()
-               
+                    bone_counter = 0
+                    gaster_counter = 0
+                    underfell_sans.head.set_image(2)
             
             
+            elif phase == 8:
+                
+                bones = attack_combination["Bone_phase_1_blue_long"]
+                bone_up = attack_combination["Bone_phase_1_orange"]
+                
+                gaster = attack_combination["Normal_Gaster_blaster"]
+                
+                
+                
+                if bone_counter < len(bones):
+                    gaster[gaster_counter].move_gaster(screen,player)
+                    gaster[gaster_counter].gaster_change(screen,gaster_blaster) 
+                 
+                        
+                  
+                    bone_up[bone_counter].orange_effect(player,take_damage)
+                    bones[bone_counter].blue_effect(player,take_damage)
+                
+
+                    bones[bone_counter].display(screen)
+                    bones[bone_counter].move(16) 
+                    
+                    bone_up[bone_counter].display(screen)
+                    bone_up[bone_counter].move(20) 
+                    
+                    if gaster[gaster_counter].finished:
+                        
+                        gaster_counter += 1
+                        attack_combination["Normal_Gaster_blaster"]  = attack.Gaster.create_group(
+                        20,
+                        "Normal_Gaster",
+                        r"Images\Attacks\Gaster_idle_1.png",
+                         50,
+                         random.randint(150,450),
+                         200,
+                         90
+                        )
+                        
+                        
+                        
+                    if bones[bone_counter].finished:
+                        bone_counter += 1
+                        
+                        attack_combination["Bone_phase_1_blue_long"] = attack.Bones.create_group(
+                            20,
+                            "blue_bone_long",
+                            r"Images\Attacks\blue_bone.png",
+                            250,
+                            200,
+                            1
+                        )
+                        
+                        attack_combination["Bone_phase_1_orange"] = attack.Bones.create_group(
+                        20,
+                        "orange_bone_long",
+                        r"Images\Attacks\orange_bone.png",
+                        250,
+                        450,
+                        1
+                        )
+                       
             
             
         
@@ -790,6 +868,20 @@ def game():
         
         if player.soul_mode == "blue" and not player.on_ground: # applies gravity if user not on ground and soul mode is blue
             player.apply_gravity()
+            
+        if player.forcefield: # if forcefield user takes no damage for certain amount of time
+            if player.forcefield_counter <= 60:
+                player.forcefield_counter += 1
+                
+                #print(player.forcefield_counter)
+            else:
+                player.forcefield = False
+                player.forcefield_counter = 0
+                
+                
+                
+                
+                
             
         
             
@@ -879,14 +971,16 @@ def game():
             
             elif pos.name == "Mercy" and button_pressed:
                 state = "Mercy"
+                pygame.mixer.music.stop()
                 pos.Mercy(screen,underfell_sans,sans_voice,font)
-                    
+                
+                
                
                     
 
             
            #
-           # mercy/
+           # mercy/ code the death screen and code animatrion of heart and finish sans dialogue
            # fight
            
            
@@ -901,7 +995,7 @@ def game():
                 
                 
                 if done:
-                 game_mode = "Phase_1"  # back to options menu
+                 game_mode  = curr_game_mode  # back to options menu
                  button_pressed = False
                  state = ""  # reset state
                  pos.text.finished = False
@@ -921,7 +1015,14 @@ def game():
         draw_data()
             
             
+       
         
+        if player.hp <= 0:
+            pass
+            
+        if False:
+            # so after game_mode is set to game over we then do a fade after fade we shall show text and then end the game 
+            pass
         
         
         
