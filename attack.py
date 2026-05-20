@@ -42,6 +42,13 @@ class Attacks:
         if self.rect.colliderect(char.rect) and not char.forcefield:
             char.forcefield = True
             sfx.play()
+            
+            
+            if char.gravity_on:
+                char.img = char.transparent_img2
+            else:
+                char.img = char.transparent_img
+                
             return True
         else:
             return False
@@ -55,6 +62,7 @@ class Bones(Attacks):
     def orange_effect(self,char,sfx):
         if not  char.moving and not char.forcefield and  self.collision(char,sfx):
             char.forcefield = True
+            char.img = char.transparent_img
             self.damage(char)
             
             

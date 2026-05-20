@@ -248,7 +248,7 @@ def game():
     keys = utils.read_data("settings.txt",0,5)
     #print(keys)
     
-    game_mode = "Phase_1" # change back to intro later
+    game_mode = "intro" # change back to intro later
     
     path = "c:\\USERS\\CHUCH\\APPDATA\\LOCAL\\MICROSOFT\\WINDOWS\\FONTS\\DTM-MONO.OTF" # undertale font - small
     font = pygame.font.Font(path,15)
@@ -875,6 +875,11 @@ def game():
                 
                 #print(player.forcefield_counter)
             else:
+                if not player.gravity_on:
+                    player.img = player.og_img
+                else:
+                    player.img = player.img2
+                
                 player.forcefield = False
                 player.forcefield_counter = 0
                 
@@ -972,7 +977,11 @@ def game():
             elif pos.name == "Mercy" and button_pressed:
                 state = "Mercy"
                 pygame.mixer.music.stop()
-                pos.Mercy(screen,underfell_sans,sans_voice,font)
+                result = pos.Mercy(screen,underfell_sans,sans_voice,font)
+
+                if result:
+                    choice_made = True
+                    
                 
                 
                

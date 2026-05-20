@@ -471,10 +471,24 @@ class player:
         
         
         
-        self.img = pygame.image.load(r"C:\Users\chuch\OneDrive\Desktop\UNDERFELL\Images\red_soul.png")
-        self.img2 = pygame.image.load(r"C:\Users\chuch\OneDrive\Desktop\UNDERFELL\Images\blue soul.png")
+        
+       
+        self.img = pygame.image.load(r"C:\Users\chuch\OneDrive\Desktop\UNDERFELL\Images\red_soul.png").convert_alpha()
+        self.img2 = pygame.image.load(r"C:\Users\chuch\OneDrive\Desktop\UNDERFELL\Images\blue soul.png").convert_alpha()
+        
+        
+       
+        
         
         self.og_img = self.img
+        
+        self.transparent_img = self.img.copy()
+        self.transparent_img.set_alpha(128)
+
+        self.transparent_img2 = self.img2.copy()
+        self.transparent_img2.set_alpha(128)
+        
+        
         
         self.gravity_on = False
         
