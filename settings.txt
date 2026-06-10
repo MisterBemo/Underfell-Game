@@ -1,5 +1,5 @@
-Master_volume:0.3
-confirm:[ENTER]
+Master_volume:0.4
+confirm:[Z]
 cancel:[X]
 heal:[C]
 move:[ARROWS]

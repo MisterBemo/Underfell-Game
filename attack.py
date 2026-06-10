@@ -2,6 +2,7 @@ import pygame
 import random
 import math
 
+
 class Attacks:
     def __init__(self, name, img, x, y, damage):
         self.name = name
@@ -17,7 +18,7 @@ class Attacks:
         
      
         
-        print(self.rect)
+      
 
     @classmethod
     def create_group(cls, amount, *args):
@@ -62,7 +63,6 @@ class Bones(Attacks):
     def orange_effect(self,char,sfx):
         if not  char.moving and not char.forcefield and  self.collision(char,sfx):
             char.forcefield = True
-            char.img = char.transparent_img
             self.damage(char)
             
             
@@ -128,6 +128,11 @@ class Gaster(Attacks):
     def gaster_collide(self,char):
         if self.blast_beam.colliderect(char.rect) and not char.forcefield:
             char.forcefield = True
+            if char.gravity_on:
+                char.img = char.transparent_img2
+            else:
+                char.img = char.transparent_img
+                
             return True
         else:
             return False

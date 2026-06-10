@@ -174,7 +174,7 @@ battle_speech = {
     "Hit_3": "you call that damage?",
     "Hit_4": "careful. you’re not untouchable.",
 
-    # LOW HP SANS (more dangerous, less joking)
+    # LOW HP SANS 
     "LowHP_1": "alright... now you’re just wasting my time.",
     "LowHP_2": "i’m done holding back.",
     "LowHP_3": "you wanted serious? here it is.",
@@ -199,10 +199,8 @@ battle_speech = {
     
     
     
-# TO DO
-# Do a bit more on bones , gravity combo, gaster blaster ,get battle music
-# later add in mercy button
-    
+#TO DO
+# WILL ADD SHARP BONE ATTACK THAT FADES IN AND THEN MOVES TOWARDS THE PLAYER INCREASING IN ACCELERATION FROM DIFFERENT ANGLES AND DIFFERENT POSITIONS
     
     
     
@@ -253,6 +251,8 @@ def game():
     path = "c:\\USERS\\CHUCH\\APPDATA\\LOCAL\\MICROSOFT\\WINDOWS\\FONTS\\DTM-MONO.OTF" # undertale font - small
     font = pygame.font.Font(path,15)
     large_font = pygame.font.Font(path,30)
+    
+  
 
 
 
@@ -313,9 +313,11 @@ def game():
     
     underfell_sans.head.x = 340
     underfell_sans.head.y = 70
+    
+    
     underfell_sans.head.base_y = underfell_sans.head.y # set y to the new y
     underfell_sans.head.og_x = underfell_sans.head.x # set x to new x
-    
+   
 
     
     
@@ -323,17 +325,19 @@ def game():
     box = gaming_objects.Box("Box")
     health_bar = gaming_objects.HPBar(400,570,25,25,20)
     
-    phase = 0# counter for phases
+    phase = 9# counter for phases
     
     state = ""
+    prev_state = state
     choice_made = False
     opcode = 0
     curr_game_mode = "Phase_1"
     sans_eye = pygame.mixer.Sound("sounds\\sans_sfx\\sans-eye-sounds.mp3")
     
     
-    take_damage = pygame.mixer.Sound("sounds\\damage_taken.mp3")
     
+    take_damage = pygame.mixer.Sound("sounds\\damage_taken.mp3")
+    slash  = pygame.mixer.Sound("sounds\\slash.mp3")
    
     
     
@@ -413,7 +417,7 @@ def game():
         
         
         utils.draw_text(screen,f"{player.hp}/20",font,(255,0,0),450,567)
-        utils.draw_text(screen,f"CHARA LV 20",font,(255,0,0),100,567)
+        utils.draw_text(screen,f"CHARA LVL 20",font,(255,0,0),100,567)
         utils.draw_text(screen,f"HP",font,(255,0,0),370,567)
     
 
@@ -421,7 +425,8 @@ def game():
     
     while run:
         fps = Clock.tick(60) 
-
+        
+  
        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -541,19 +546,7 @@ def game():
                     player.set_gravity()
                     underfell_sans.head.set_image(14)
                    
-                    
-               
-                """
-                if bone_counter >= len(bones):
-                    if box.w != 600 or box.h != 200:
-                        box.set_mode("on")
-                        box.change_size()      
-                    else:
-                        print("asda")
-                        bone_counter = 0
-                        phase +=1
-                        box.set_mode("off")
-                """    
+       
             
             
             elif phase == 2:
@@ -715,7 +708,6 @@ def game():
                     
                     
                     
-                    
                    
             
             elif phase == 6:
@@ -850,8 +842,29 @@ def game():
                         450,
                         1
                         )
-                       
+                        
+                        
+                else: # might reset bone_phase_orange and 
+                    bone_counter = 0
+                    gaster_counter = 0
+                    phase += 1
             
+            elif phase == 9:
+                phase += 1
+                game_mode = "Options"
+              
+                    
+            elif phase == 10:
+                game_mode = "Options"
+                utils.flicker(screen)
+                # when programming the attack button make it so that if user gets bang oncentre or near it goes to phase  2
+                # otherwise sans will dodge and if it gets to the last one and he misses either way sans will go phase 2
+                # gonna leave 3 options for act
+  
+                
+                
+            # will check for damage
+          
             
         
         
@@ -907,6 +920,7 @@ def game():
             
             if box.mode == "off":
                 game_mode = "Options"
+                utils.flicker(screen)
                 pygame.mixer.music.play(-1)
                 
         
@@ -944,14 +958,16 @@ def game():
             
             key_code = pygame.key.get_pressed()
             
-            if key_code[pygame.K_z]:
-                if not button_pressed:
-                    button_pressed  = True
+            if box.w == 600 and box.h == 200:
+                
+                if key_code[pygame.K_z]:
+                    if not button_pressed:
+                        button_pressed  = True
             
-            if key_code[pygame.K_x] and pos.name == "Item":
-                if button_pressed:
-                    button_pressed  = False
-                    state = ""
+                if key_code[pygame.K_x] and pos.name == "Item":
+                    if button_pressed:
+                        button_pressed  = False
+                        state = ""
                 
             if pos.name == "Act" and button_pressed:
                 state = "Act"
@@ -976,11 +992,19 @@ def game():
             
             elif pos.name == "Mercy" and button_pressed:
                 state = "Mercy"
-                pygame.mixer.music.stop()
                 result = pos.Mercy(screen,underfell_sans,sans_voice,font)
 
                 if result:
                     choice_made = True
+                    
+            elif pos.name == "Fight" and button_pressed:
+                state = "Fight"
+                result  = pos.fight(screen,underfell_sans,slash)
+                
+                print(result)
+                if result:
+                    choice_made = True
+                    
                     
                 
                 
@@ -1004,6 +1028,7 @@ def game():
                 
                 
                 if done:
+                 prev_state = state
                  game_mode  = curr_game_mode  # back to options menu
                  button_pressed = False
                  state = ""  # reset state
@@ -1028,6 +1053,22 @@ def game():
         
         if player.hp <= 0:
             pass
+        
+        print(prev_state)
+        
+        if prev_state == "Fight":
+            print("prev_state")
+            underfell_sans.head.set_image(3)
+            underfell_sans.legs.x = 315
+            underfell_sans.head.x = 340
+            underfell_sans.body.set_image(1)
+            
+     
+   
+            prev_state = ""
+            
+        
+    
             
         if False:
             # so after game_mode is set to game over we then do a fade after fade we shall show text and then end the game 

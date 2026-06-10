@@ -71,8 +71,33 @@ def fade_out(screen, w,h,speed=1, halt=10,color=colors["black"]):
         fade.set_alpha(alpha)
         screen.blit(fade, (0, 0))
         pygame.display.update()
+        
         pygame.time.delay(halt)
         
+
+
+def flicker(screen,sfx=None,n=4 ,time=0,speed=1):
+    w,h = screen.get_size() # get width and height of window
+    
+    black_screen = pygame.Surface((w,h))
+    black_screen.fill(colors["black"])
+    
+    for repeat in range(n):
+        for z in range(60):
+            time += speed
+            if time == 40:
+               black_screen.set_alpha(0) # not transparent
+
+               
+            elif time == 60:
+               black_screen.set_alpha(255) # transparent
+               time = 0
+            
+            screen.blit(black_screen,(0,0))
+            pygame.display.update()
+               
+               
+    
 
 
 

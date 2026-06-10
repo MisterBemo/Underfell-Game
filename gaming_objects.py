@@ -3,7 +3,7 @@ from os import name
 
 import pygame
 import utils
-
+import random
 
 
 
@@ -130,8 +130,11 @@ class DialogueManager:
     
     def update(self,dt,sfx):
         if self.finished:
+  
             return self.finished
+        
         else:
+       
             
             self.timer +=dt
             
@@ -206,10 +209,13 @@ class Box:
                 self.x = target_x
             if self.y != target_y:
                 self.y = target_y
+                
             if self.w < target_w:
                 self.w += 8
                 if self.w > target_w:
                     self.w = target_w
+            
+            
             if self.h > target_h:
                 self.h -= 8
                 if self.h < target_h:
@@ -258,7 +264,8 @@ class Box:
 class Battle_buttons(Box):
     
     information = {
-        "data1":"*You feel like you are going to have a bad time . . . ."
+        "data1":"*You feel like you are going to have a bad time . . . .",
+        "data2": "Sans seems to be mad with rage !!!"
         
         }  
     
@@ -273,8 +280,29 @@ class Battle_buttons(Box):
       
         
         self.tokenised = utils.tokenise(self.information,200, 350,20,550,25) 
-        self.text = DialogueManager(self.tokenised[0])
+        self.text = DialogueManager(self.tokenised[random.randint(0,1)])
         self.c_pressed  = False
+        
+        self.slash_timer = 0
+        self.attack_rectangle = pygame.Rect((10, 320), (25, 160))
+        
+        self.slash_activate = False
+        self.Fight_cooldown = 0
+        
+        self.Miss = r"C:\Users\chuch\OneDrive\Desktop\UNDERFELL\Images\Miss.png"
+        self.Miss_img = pygame.image.load(self.Miss)
+        
+        self.slash = utils.load_data(r"C:\Users\chuch\OneDrive\Desktop\UNDERFELL\Images\knife")
+        self.slash_index = 0
+        
+        self.Fight_finished = False
+        self.dodge_checked = False
+        
+        
+        self.Miss_y = 80
+        self.attack_X = 0 
+        self.show_fight_img = True
+        
         
         
         self.name = name
@@ -286,6 +314,10 @@ class Battle_buttons(Box):
         self.img2 = pygame.image.load(img2)
         
         self.og_img = self.img
+        
+        self.Fight_box_img = r"C:\Users\chuch\OneDrive\Desktop\UNDERFELL\Images\target.png"
+        
+        self.Fight_box = pygame.image.load(self.Fight_box_img)
         
     def draw(self,screen):
         screen.blit(self.img,(self.x,self.y))
@@ -307,6 +339,8 @@ class Battle_buttons(Box):
            
            
     def Item(self,opcode,screen,font,p1,sfx): # p1 is player
+      opcode = max(0, min(opcode, len(self.items)-1))
+      
       
       def display(screen,font,code):
           
@@ -321,7 +355,7 @@ class Battle_buttons(Box):
 
           for item in self.items:
              # print(code)
-              if item.current_text == self.items[code].current_text: # issue is here
+              if item == self.items[code]: # issue is here
                     item.current_text = item.new_text
                     item.curr_color = item.new_color
               else:
@@ -340,7 +374,12 @@ class Battle_buttons(Box):
                 if not self.c_pressed:
                  sfx.play()
                  if p1.hp < 20:
-                    p1.hp += self.items[code].index[self.items[code].og_text]
+                    if  (self.items[code].index[self.items[code].og_text] + p1.hp ) > 20:
+                        p1.hp = 20
+                    else:
+                      p1.hp += self.items[code].index[self.items[code].og_text]
+                     
+                     
                  self.items.pop(code)
                  self.c_pressed =  True
                  return True
@@ -359,20 +398,122 @@ class Battle_buttons(Box):
         
         if char.Mercy_text.index < 15:
             char.head.set_image(9)
-        elif char.Mercy_text.index < 20:
+        elif char.Mercy_text.index < 25:
             char.head.set_image(10)
         elif char.Mercy_text.index < 30:
             char.head.set_image(1)
         elif char.Mercy_text.index < 60:
             char.head.set_image(12)
         elif char.Mercy_text.index < 65:
-            char.head.set_image(4)
+            char.head.set_image(1)
         else:
-            pass
-            # here we gonna make the bones come up
+            char.Mercy_text.index = 0
+            char.Mercy_text.finished = False
+            for letter in char.Mercy_text.current_line:
+                letter.visible = False
+              
     
-    def Mercy_animation(self): # once mercy text has done the sans character will bring up bones and then player will die and then go to home screen
-        pass
+            return True
+            # here we gonna make the bones come up # scratched this idea
+            
+    
+    
+    def fight(self, screen, char, sfx):
+        keys = pygame.key.get_pressed()
+
+        if self.show_fight_img:
+            screen.blit(self.Fight_box, (135, 350))
+
+        # Track the rectangle position
+        self.attack_X = self.attack_rectangle.x
+
+        # Allow slash activation only before the target zone
+        if not self.slash_activate and self.attack_X < 700:
+            print("HELLO I WORK")
+            if keys[pygame.K_SPACE]:
+                self.slash_activate = True
+                sfx.play()
+
+        # Move rectangle while slash hasn't been triggered
+        if not self.slash_activate:
+            if self.attack_rectangle.x < 1000:
+                self.attack_rectangle.x += 10
+                print("I AM MOVING",self.Fight_finished)
+            else:
+                print("I AM NOT MOCING")
+        else:
+            # Play slash animation
+            if self.slash_index < len(self.slash):
+                screen.blit(self.slash[self.slash_index], (250, 200))
+                self.slash_timer += 1
+                if self.slash_timer >= 5:
+                    self.slash_index += 1
+                    self.slash_timer = 0
+
+        pygame.draw.rect(screen, "black", self.attack_rectangle)
+        pygame.draw.rect(screen, "white", self.attack_rectangle, 4)
+
+        if self.attack_X >= 700:
+            if self.Miss_y > 30:
+                self.Miss_y -= 2
+            else:
+                self.Fight_finished= True
+               
+            screen.blit(self.Miss_img, (100, self.Miss_y))
+
+        else:
+            
+            if self.attack_X < 600 and self.slash_activate and not self.dodge_checked:
+                self.dodge_checked = True
+                dodge_roll = random.randint(1, 100)
+
+                if dodge_roll <= 90:
+                    # Enemy dodged
+                    char.body.x = 50
+                    char.head.set_image(3)
+                    char.body.set_image(6)
+                    char.legs.x = 90
+                    char.head.x = 110
+                    self.Fight_finished = True
+                    
+                
+                    
+                
+                else:
+                    print("no dodge") # will need to switch to phase two if slashed
+                    return True
+
+        if self.Fight_finished:
+            self.Fight_cooldown += 1
+            if self.Fight_cooldown >= 100:
+                self.reset_fight()
+                return True
+
+    def reset_fight(self):
+        self.Fight_cooldown = 0         
+        self.Fight_finished = False     
+        self.slash_activate = False
+        self.slash_timer = 0
+        self.slash_index = 0
+        self.dodge_checked = False
+        self.attack_rectangle.x = 10
+        self.attack_X = 0              
+        self.Miss_y = 80               
+        self.show_fight_img = True
+
+                   
+   
+    
+          
+       
+        
+        
+        
+        # will fix everything in here
+        # idea is that if the user gets the bar in the centre then sans will take damage due to random num generator
+        # otherwise sans has an image the causes bone to appear and defend him
+        # will also need to add red slash with sound
+        # will finish this on saturday
     
     
         
@@ -398,10 +539,10 @@ class Food:
     y = 800
     def __init__(self, name):
         self.index = {
-            "Monster Candy": 2,
+            "Monster Candy": 4,
             "Spider Donut": 3,
-            "Butterscotch Pie": 8,
-            "Nice Cream": 4
+            "Butterscotch Pie": 20,
+            "Nice Cream": 5
         }
        
         

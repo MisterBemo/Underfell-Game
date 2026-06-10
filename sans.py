@@ -85,9 +85,9 @@ class BodyPart:
         screen.blit(self.img, (self.x, self.y))
 
     def set_image(self, index,offset=0):
-        index = max(0, min(index, len(self.images) - 1))
+        index = max(0, min(index, len(self.images) - 1)) # to clamp
        
-        self.img = self.images[index]
+        self.img = self.images[index] # get image frm list
         
         if index == 6 or index == 7:
             if not self.offset_applied:
@@ -96,7 +96,7 @@ class BodyPart:
         else:
             if self.x != self.og_x:
                 self.x =  self.og_x 
-                self.offset_applied = False
+                self.offset_applied = False # turn off offset
                 
 
     def update(self):
