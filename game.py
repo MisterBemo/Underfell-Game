@@ -212,7 +212,7 @@ battle_speech = {
 def game():
     # indexes for attacks
     global battle_speech
-
+    new_phase = None
     bone_counter = 0 
     gaster_counter = 0
     speech_lock = False
@@ -246,7 +246,7 @@ def game():
     keys = utils.read_data("settings.txt",0,5)
     #print(keys)
     
-    game_mode = "intro" # change back to intro later
+    game_mode = "Phase_1" # change back to intro later
     
     path = "c:\\USERS\\CHUCH\\APPDATA\\LOCAL\\MICROSOFT\\WINDOWS\\FONTS\\DTM-MONO.OTF" # undertale font - small
     font = pygame.font.Font(path,15)
@@ -325,7 +325,7 @@ def game():
     box = gaming_objects.Box("Box")
     health_bar = gaming_objects.HPBar(400,570,25,25,20)
     
-    phase = 9# counter for phases
+    phase = 0# counter for phases
     
     state = ""
     prev_state = state
@@ -420,7 +420,9 @@ def game():
         utils.draw_text(screen,f"CHARA LVL 20",font,(255,0,0),100,567)
         utils.draw_text(screen,f"HP",font,(255,0,0),370,567)
     
-
+    
+    # fix fight button by maybe ending the battle if the user pressess fight
+    #if phase is ten and user missess automatic slash
    
     
     while run:
@@ -479,7 +481,7 @@ def game():
         
         if game_mode == "Phase_1":
             
-            bones = []
+           # bones = []
             
             
             
@@ -860,10 +862,17 @@ def game():
                 # when programming the attack button make it so that if user gets bang oncentre or near it goes to phase  2
                 # otherwise sans will dodge and if it gets to the last one and he misses either way sans will go phase 2
                 # gonna leave 3 options for act
-  
+        
+        
+        
+        elif game_mode == "Phase_2":
+            
+            if phase == 11:
+                pass
+            
                 
                 
-            # will check for damage
+
           
             
         
@@ -999,10 +1008,13 @@ def game():
                     
             elif pos.name == "Fight" and button_pressed:
                 state = "Fight"
-                result  = pos.fight(screen,underfell_sans,slash)
+                result = pos.fight(screen,underfell_sans,slash)
+                
+                new_phase = True if phase == 10 else None
                 
                 print(result)
                 if result:
+                    print("YES THIS HAS CHANGED")
                     choice_made = True
                     
                     
@@ -1026,6 +1038,13 @@ def game():
                 player.y = player.og_y
                 pos.img  = pos.og_img
                 
+                if new_phase != None:
+                    underfell_sans.head.set_image(6)
+                    underfell_sans.body.set_image(2)
+                    
+                                        
+
+                
                 
                 if done:
                  prev_state = state
@@ -1035,6 +1054,9 @@ def game():
                  pos.text.finished = False
                  choice_made = False
                 
+                 if phase == 10 and prev_state == "Fight": # if they pressed fight and phase is 10 then change to phase 2
+                     game_mode  = "Phase_2"
+                     phase += 1
                 
         
           
@@ -1057,11 +1079,14 @@ def game():
         print(prev_state)
         
         if prev_state == "Fight":
-            print("prev_state")
-            underfell_sans.head.set_image(3)
+            if phase < 10:
+                underfell_sans.head.set_image(3)
+                underfell_sans.body.set_image(1)
+                
             underfell_sans.legs.x = 315
             underfell_sans.head.x = 340
-            underfell_sans.body.set_image(1)
+            print("AI FIX")
+            
             
      
    

@@ -469,27 +469,32 @@ class Battle_buttons(Box):
 
                 if dodge_roll <= 90:
                     # Enemy dodged
-                    char.body.x = 50
-                    char.head.set_image(3)
-                    char.body.set_image(6)
+                    char.body.x = 75
+                    char.head.set_image(2)
                     char.legs.x = 90
                     char.head.x = 110
-                    self.Fight_finished = True
                     
-                
+                    self.Fight_finished = True
+                   
+                    
+                    self.Fight_finished = True
                     
                 
                 else:
                     print("no dodge") # will need to switch to phase two if slashed
                     return True
 
+
+
         if self.Fight_finished:
             self.Fight_cooldown += 1
             if self.Fight_cooldown >= 100:
                 self.reset_fight()
                 return True
+            
 
-    def reset_fight(self):
+
+    def reset_fight(self): # reset
         self.Fight_cooldown = 0         
         self.Fight_finished = False     
         self.slash_activate = False
