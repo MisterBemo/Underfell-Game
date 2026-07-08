@@ -1,5 +1,7 @@
 import random
 
+from keyboard import play
+
 import utils
 import pygame
 import gaming_objects
@@ -246,7 +248,7 @@ def game():
     keys = utils.read_data("settings.txt",0,5)
     #print(keys)
     
-    game_mode = "Phase_1" # change back to intro later
+    game_mode = "Phase_2" # change back to intro later
     
     path = "c:\\USERS\\CHUCH\\APPDATA\\LOCAL\\MICROSOFT\\WINDOWS\\FONTS\\DTM-MONO.OTF" # undertale font - small
     font = pygame.font.Font(path,15)
@@ -325,7 +327,7 @@ def game():
     box = gaming_objects.Box("Box")
     health_bar = gaming_objects.HPBar(400,570,25,25,20)
     
-    phase = 0# counter for phases
+    phase = 11# counter for phases
     
     state = ""
     prev_state = state
@@ -423,7 +425,8 @@ def game():
     
     # fix fight button by maybe ending the battle if the user pressess fight
     #if phase is ten and user missess automatic slash
-   
+    
+    
     
     while run:
         fps = Clock.tick(60) 
@@ -866,16 +869,67 @@ def game():
         
         
         elif game_mode == "Phase_2":
-            
-            if phase == 11:
-                pass
-            
-                
-                
 
-          
+            if phase == 11:
+                underfell_sans.head.set_image(5)
+                finished = attack.Attacks.gravityattack(player, "RIGHT", sans_eye)
+                if player.GravityFinished:
+                    phase += 1
+
+            elif phase == 12:
+                finished = attack.Attacks.gravityattack(player, "LEFT", sans_eye)
+                print()
+                if player.GravityFinished:
+                    phase += 1
+
+            elif phase == 13:
+                finished = attack.Attacks.gravityattack(player, "RIGHT", sans_eye)
+                print()
+                if player.GravityFinished:
+                    phase += 1
+
+            elif phase == 14:
+                finished = attack.Attacks.gravityattack(player, "LEFT", sans_eye)
+                if player.GravityFinished:
+                    phase += 1
+
+            elif phase == 15:
+                finished = attack.Attacks.gravityattack(player, "RIGHT", sans_eye)
+                print()
+                if player.GravityFinished:
+                    phase += 1
+
+            elif phase == 16:
+                finished = attack.Attacks.gravityattack(player, "DOWN", sans_eye)
+                if player.GravityFinished:
+                    phase += 1
+
+            elif phase == 17:
+                finished = attack.Attacks.gravityattack(player, "UP", sans_eye)
+                if player.GravityFinished:
+                    phase += 1
+
+            elif phase == 18:
+                finished = attack.Attacks.gravityattack(player, "RIGHT", sans_eye)
+                print()
+                if player.GravityFinished:
+                    phase += 1
+
+            elif phase == 19:
+                finished = attack.Attacks.gravityattack(player, "DOWN", sans_eye)
+                if player.GravityFinished:
+                    phase += 1
+
+            elif phase == 20:
+                finished = attack.Attacks.gravityattack(player, "DOWN", sans_eye)
+                if player.GravityFinished:
+                    phase += 1
+                    player.img  = player.og_img
+                    
             
-        
+            
+
+            # add in sprites for sans and add noise
         
         
         

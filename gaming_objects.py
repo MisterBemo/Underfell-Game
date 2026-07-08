@@ -1,5 +1,6 @@
 # will just hold all the classess for all the different systems
 from os import name
+from re import S
 
 import pygame
 import utils
@@ -469,11 +470,14 @@ class Battle_buttons(Box):
 
                 if dodge_roll <= 90:
                     # Enemy dodged
-                    char.body.x = 75
-                    char.head.set_image(2)
+                    
+                    char.body.x = 50
+                    char.head.set_image(3)
+                    char.body.set_image(0)
+                    
+                    
                     char.legs.x = 90
                     char.head.x = 110
-                    
                     self.Fight_finished = True
                    
                     
@@ -491,10 +495,8 @@ class Battle_buttons(Box):
             if self.Fight_cooldown >= 100:
                 self.reset_fight()
                 return True
-            
 
-
-    def reset_fight(self): # reset
+    def reset_fight(self, char=None): # reset
         self.Fight_cooldown = 0         
         self.Fight_finished = False     
         self.slash_activate = False
@@ -613,15 +615,23 @@ class player:
         
         self.forcefield = False
         self.forcefield_counter = 0
+        self.rotate = False
         
-        
+        self.GravityattackOn = False
+        self.GravityFinished = False
         
         
         
        
         self.img = pygame.image.load(r"C:\Users\chuch\OneDrive\Desktop\UNDERFELL\Images\red_soul.png").convert_alpha()
         self.img2 = pygame.image.load(r"C:\Users\chuch\OneDrive\Desktop\UNDERFELL\Images\blue soul.png").convert_alpha()
-        
+
+        self.UP = pygame.transform.rotate(self.img2, 180)
+        self.DOWN = self.img2
+        self.LEFT = pygame.transform.rotate(self.img2, -90)
+        self.RIGHT = pygame.transform.rotate(self.img2, 90)
+       
+       
         
        
         
@@ -646,8 +656,9 @@ class player:
         self.ground_y = self.y # ground level
         self.gravity = 0.5
         self.jump_strenghth = -12
-        self.ground_y = 510
+        #self.ground_y = 510
         self.vel_y = 0
+        self.vel_x = 0
         
         self.rect = self.img.get_rect(topleft=(self.x,self.y))
         
@@ -695,13 +706,16 @@ class player:
             self.x = box.box.left + 10
             
         if (self.x + self.width) + 10  > box.box.right:
+            print(box.box.right)
             self.x = (box.box.right - self.width) - 10
         
     
         if self.y-10 < box.box.top: # check top
+            print(box.box.top)
             self.y = box.box.top+10
         
         if (self.y + self.height)+10 > box.box.bottom: # 
+            print(box.box.bottom)
             self.y = (box.box.bottom - self.height) - 10
         
         self.rect.x = self.x
@@ -731,7 +745,53 @@ class player:
             self.y = self.ground_y
             self.vel_y = 0
             self.on_ground = True
-       
+    
+    def move_LEFT(self):
+        if self.x-10 > 275:
+            self.vel_x -= 0.67
+            self.x += self.vel_x
+        else:
+            self.vel_x = 0
+            self.vel_x = 0
+            self.GravityFinished = True
+            self.rotate = False
+            self.GravityattackOn = False
+    
+    def move_RIGHT(self):
+        if ( self.x + self.width) + 10 < 525:
+            self.vel_x += 0.67
+            self.x += self.vel_x
+        else:
+            self.vel_x = 0
+            self.GravityFinished = True
+            self.rotate = False
+            self.GravityattackOn = False
+    
+    def move_DOWN(self):
+        if  self.y < 500: # UP IS DOWN AND DOWN IS UP# something is wrong
+            self.vel_y += 0.67
+            self.y += self.vel_y
+        else:
+            self.vel_y = 0
+            self.GravityFinished = True
+            self.rotate = False
+            self.GravityattackOn = False
+    
+    
+    
+    def move_UP(self):
+        if  self.y - 10 > 300:
+            self.vel_y -= 0.67
+            self.y += self.vel_y
+        else:
+            self.vel_y = 0
+            self.GravityFinished = True
+            self.rotate = False
+            self.GravityattackOn = False
+            
+    
+    def setback(self):
+        self.img = self.og_img
     
     
     def draw(self,screen): # draw

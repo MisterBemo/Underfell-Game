@@ -4,6 +4,7 @@ import math
 
 
 class Attacks:
+    
     def __init__(self, name, img, x, y, damage):
         self.name = name
         self.x = x
@@ -34,7 +35,7 @@ class Attacks:
     def move(self, speed):
         self.x += speed
         self.rect.x = self.x
-        self.rect.y = self.y
+       # self.rect.y = self.y
         
         if self.x >= 800:
             self.finished = True
@@ -53,6 +54,54 @@ class Attacks:
             return True
         else:
             return False
+    
+    @staticmethod
+    def gravityattack(heart,direction,sfx):
+      
+        heart.GravityFinished = False
+
+        if not heart.GravityattackOn:
+            heart.GravityattackOn = True
+            sfx.play()
+            
+        
+        if not heart.rotate:
+            Attacks.rotate(heart,direction)
+            heart.rotate = True
+            
+        if direction == "LEFT":
+            heart.move_LEFT()
+        elif direction == "RIGHT":
+            heart.move_RIGHT()
+        elif direction == "UP":
+            heart.move_UP()
+        else:
+            heart.move_DOWN()
+        
+        
+  
+           
+                
+             
+               
+            
+    
+    @staticmethod
+    def rotate(obj,img):
+        
+        if img == "LEFT":
+            obj.img = obj.LEFT
+        elif img == "RIGHT":
+            obj.img =  obj.RIGHT
+        elif img == "UP":
+            obj.img  = obj.UP
+        else:
+            obj.img = obj.DOWN
+        
+        
+        
+        
+        
 
 
 class Bones(Attacks):

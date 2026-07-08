@@ -92,6 +92,7 @@ class BodyPart:
         index = max(0, min(index, len(self.images) - 1)) # to clamp
        
         self.img = self.images[index] # get image frm list
+        print(self.img)
         
         if index == 6 or index == 7:
             if not self.offset_applied:
