@@ -78,9 +78,12 @@ def fade_out(screen, w,h,speed=1, halt=10,color=colors["black"]):
 
 def flicker(screen,sfx=None,n=4 ,time=0,speed=1):
     w,h = screen.get_size() # get width and height of window
-    
+    # can fix this
     black_screen = pygame.Surface((w,h))
-    black_screen.fill(colors["black"])
+    black_screen.fill(colors["black"]) # tomorrow will try and turn this into an actual flicker
+    
+    # instead of using loops we use individual frames
+    # since i am bored we will make a flicker class
     
     for repeat in range(n):
         for z in range(60):

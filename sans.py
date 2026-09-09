@@ -38,9 +38,9 @@ class Character:
         
 
     def draw(self, screen):
-        print("HEAD", self.head.x)
-        print("BODY", self.body.x)
-        print("LEGS", self.legs.x)
+       # print("HEAD", self.head.x)
+      #  print("BODY", self.body.x)
+       # print("LEGS", self.legs.x)
         
         self.legs.draw(screen)
         self.body.draw(screen)

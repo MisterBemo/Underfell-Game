@@ -1,5 +1,5 @@
 Master_volume:0.4
-confirm:[Z]
+confirm:[ENTER]
 cancel:[X]
-heal:[C]
-move:[ARROWS]
+heal:[SPACE]
+move:[WASD]

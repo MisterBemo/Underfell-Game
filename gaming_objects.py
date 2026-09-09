@@ -356,7 +356,7 @@ class Battle_buttons(Box):
 
           for item in self.items:
              # print(code)
-              if item == self.items[code]: # issue is here
+              if item == self.items[code]: 
                     item.current_text = item.new_text
                     item.curr_color = item.new_color
               else:
@@ -415,14 +415,14 @@ class Battle_buttons(Box):
               
     
             return True
-            # here we gonna make the bones come up # scratched this idea
+        # here we gonna make the bones come up # scratched this idea
             
     
     
     def fight(self, screen, char, sfx):
         keys = pygame.key.get_pressed()
 
-        if self.show_fight_img:
+        if self.show_fight_img and self.Fight_cooldown < 200:
             screen.blit(self.Fight_box, (135, 350))
 
         # Track the rectangle position
@@ -433,7 +433,10 @@ class Battle_buttons(Box):
             print("HELLO I WORK")
             if keys[pygame.K_SPACE]:
                 self.slash_activate = True
+                self.Fight_finished = True
                 sfx.play()
+                
+        
 
         # Move rectangle while slash hasn't been triggered
         if not self.slash_activate:
@@ -441,73 +444,75 @@ class Battle_buttons(Box):
                 self.attack_rectangle.x += 10
                 print("I AM MOVING",self.Fight_finished)
             else:
-                print("I AM NOT MOCING")
+                print("I AM NOT MOVING")
         else:
             # Play slash animation
             if self.slash_index < len(self.slash):
-                screen.blit(self.slash[self.slash_index], (250, 200))
-                self.slash_timer += 1
-                if self.slash_timer >= 5:
-                    self.slash_index += 1
-                    self.slash_timer = 0
+              self.draw_slash(screen)
+            else:
+                self.slash_index = 0
+                    
+                    
 
         pygame.draw.rect(screen, "black", self.attack_rectangle)
         pygame.draw.rect(screen, "white", self.attack_rectangle, 4)
 
-        if self.attack_X >= 700:
+        if self.attack_X >= 1000: # if the bar goes off screen then we show the miss image
             if self.Miss_y > 30:
-                self.Miss_y -= 2
+                self.Miss_y -= 2 # The missed text will dissappear upwards
             else:
                 self.Fight_finished= True
                
             screen.blit(self.Miss_img, (100, self.Miss_y))
-
-        else:
-            
-            if self.attack_X < 600 and self.slash_activate and not self.dodge_checked:
-                self.dodge_checked = True
-                dodge_roll = random.randint(1, 100)
-
-                if dodge_roll <= 90:
-                    # Enemy dodged
-                    
-                    char.body.x = 50
-                    char.head.set_image(3)
-                    char.body.set_image(0)
-                    
-                    
-                    char.legs.x = 90
-                    char.head.x = 110
-                    self.Fight_finished = True
-                   
-                    
-                    self.Fight_finished = True
-                    
-                
-                else:
-                    print("no dodge") # will need to switch to phase two if slashed
-                    return True
-
-
-
+    
         if self.Fight_finished:
+            doge = random.randint(1,10)
+            
+            if doge > 8 :
+                print("yes")
+                char.body.x = 110 # this is fine
+                char.head.x = 150
+                char.legs.x = 120
+
+          
+
+        print("index:",self.slash_index)
+
+        if self.Fight_finished: # cooldown before returning # MUST BE THIS
             self.Fight_cooldown += 1
-            if self.Fight_cooldown >= 100:
+            if self.Fight_cooldown >= 200:
+                print("GOO GOO GAGA:",self.Fight_cooldown)
                 self.reset_fight()
                 return True
+            
+            
+            
 
-    def reset_fight(self, char=None): # reset
+    def reset_fight(self): # reset
         self.Fight_cooldown = 0         
         self.Fight_finished = False     
         self.slash_activate = False
         self.slash_timer = 0
         self.slash_index = 0
-        self.dodge_checked = False
         self.attack_rectangle.x = 10
         self.attack_X = 0              
         self.Miss_y = 80               
         self.show_fight_img = True
-
+    
+    
+    
+    def draw_slash(self,screen):
+        screen.blit(self.slash[self.slash_index], (250, 200))
+        self.slash_timer += 1
+        if self.slash_timer >= 5:
+            self.slash_index += 1
+            self.slash_timer = 0
+            
+        if self.slash_index == len(self.slash):
+            self.slash_index = 0
+            return True
+            
+        
                    
    
     
@@ -653,10 +658,10 @@ class player:
         self.on_ground = False
         self.soul_mode = "red"
         
-        self.ground_y = self.y # ground level
+       # self.ground_y = self.y # ground level
         self.gravity = 0.5
         self.jump_strenghth = -12
-        #self.ground_y = 510
+        self.ground_y = 510
         self.vel_y = 0
         self.vel_x = 0
         
@@ -720,6 +725,8 @@ class player:
         
         self.rect.x = self.x
         self.rect.y = self.y
+        
+        #pygame.draw.rect()
             
         
         
@@ -729,6 +736,8 @@ class player:
             self.gravity_on = True
             self.img = self.img2
             self.soul_mode = "blue"
+            # set ground level to bottom of display so blue-jump lands on floor
+          
         else:
             self.gravity_on = False
             self.img = self.og_img
@@ -748,10 +757,9 @@ class player:
     
     def move_LEFT(self):
         if self.x-10 > 275:
-            self.vel_x -= 0.67
+            self.vel_x -= 0.7
             self.x += self.vel_x
         else:
-            self.vel_x = 0
             self.vel_x = 0
             self.GravityFinished = True
             self.rotate = False
@@ -759,7 +767,7 @@ class player:
     
     def move_RIGHT(self):
         if ( self.x + self.width) + 10 < 525:
-            self.vel_x += 0.67
+            self.vel_x += 0.7
             self.x += self.vel_x
         else:
             self.vel_x = 0
@@ -769,7 +777,7 @@ class player:
     
     def move_DOWN(self):
         if  self.y < 500: # UP IS DOWN AND DOWN IS UP# something is wrong
-            self.vel_y += 0.67
+            self.vel_y += 0.7
             self.y += self.vel_y
         else:
             self.vel_y = 0
@@ -781,7 +789,7 @@ class player:
     
     def move_UP(self):
         if  self.y - 10 > 300:
-            self.vel_y -= 0.67
+            self.vel_y -= 0.7
             self.y += self.vel_y
         else:
             self.vel_y = 0
